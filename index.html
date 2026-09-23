@@ -1,33 +1,29 @@
-
 <!DOCTYPE html>
-<html lang="en">
 
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<meta name="theme-color" content="#080808">
-<meta name="description" content="THE APOCALYPSE — A first-person survival horror game by Alessii8.">
-
-<title>THE APOCALYPSE</title>
+<meta name="theme-color" content="#050505">
+<meta name="description" content="THE APOCALYPSE — A survival horror experience by Alessii8.">
+<title>THE APOCALYPSE // ARCHIVE</title>
 
 <style>
-
-/* =========================================================
-   THE APOCALYPSE
-   MINIMAL OFFICIAL WEBSITE
-   ========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 :root{
-    --black:#070707;
-    --black2:#0b0b0b;
-    --white:#f2f2ef;
-    --gray:#8b8b87;
-    --gray2:#555552;
-    --red:#a51f1f;
-    --border:rgba(255,255,255,.09);
-    --max:1200px;
-    --nav:72px;
+    --bg:#030404;
+    --panel:#080b0a;
+    --panel2:#0c100e;
+    --text:#d7ddd8;
+    --muted:#66716b;
+    --dim:#303934;
+    --green:#91ffb0;
+    --green2:#3cff72;
+    --red:#ff3030;
+    --line:rgba(145,255,176,.12);
+    --mono:"IBM Plex Mono",monospace;
+    --sans:"Space Grotesk",sans-serif;
 }
 
 *{
@@ -38,18 +34,20 @@
 
 html{
     scroll-behavior:smooth;
-    background:var(--black);
+    background:var(--bg);
 }
 
 body{
-    background:var(--black);
-    color:var(--white);
-    font-family:Arial,Helvetica,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
     overflow-x:hidden;
+    cursor:crosshair;
 }
 
-body.lock{
-    overflow:hidden;
+body::selection{
+    background:var(--green);
+    color:#000;
 }
 
 a{
@@ -63,1241 +61,854 @@ button{
 
 img{
     max-width:100%;
-    display:block;
 }
-
-::selection{
-    background:var(--red);
-    color:white;
-}
-
 
 /* =========================================================
-   NOISE
-   ========================================================= */
+   CRT
+========================================================= */
 
 body::before{
     content:"";
     position:fixed;
     inset:0;
-
+    z-index:9998;
     pointer-events:none;
-    z-index:9999;
-
-    opacity:.025;
-
+    opacity:.09;
     background:
         repeating-linear-gradient(
-            0deg,
-            rgba(255,255,255,.4) 0,
-            rgba(255,255,255,.4) 1px,
-            transparent 1px,
-            transparent 5px
+            to bottom,
+            transparent 0px,
+            transparent 2px,
+            rgba(255,255,255,.08) 3px
+        );
+    mix-blend-mode:screen;
+}
+
+body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:9997;
+    pointer-events:none;
+    background:
+        radial-gradient(
+            ellipse at center,
+            transparent 45%,
+            rgba(0,0,0,.7) 100%
         );
 }
 
-
 /* =========================================================
-   LOADER
-   ========================================================= */
+   BOOT SCREEN
+========================================================= */
 
-.loader{
+.boot{
     position:fixed;
     inset:0;
-
-    z-index:10000;
-
+    z-index:20000;
+    background:#020302;
     display:flex;
     align-items:center;
     justify-content:center;
-
-    background:#050505;
-
-    transition:
-        opacity .7s ease,
-        visibility .7s ease;
+    font-family:var(--mono);
+    transition:opacity .8s ease, visibility .8s ease;
 }
 
-.loader.hide{
+.boot.hidden{
     opacity:0;
     visibility:hidden;
 }
 
-.loader-inner{
-    text-align:center;
+.boot-terminal{
+    width:min(700px,90%);
+    color:var(--green);
+    font-size:12px;
+    line-height:2;
 }
 
-.loader-title{
-    font-size:.65rem;
-    font-weight:700;
-    letter-spacing:.35em;
+.boot-title{
+    font-size:clamp(30px,7vw,80px);
+    font-weight:600;
+    letter-spacing:-.08em;
+    margin-bottom:25px;
+    animation:glitchText 1.7s infinite;
 }
 
-.loader-line{
-    width:140px;
-    height:1px;
+.boot-line{
+    color:#526159;
+}
 
-    margin:18px auto 0;
+.boot-line span{
+    color:var(--green);
+}
 
-    background:#222;
-
+.boot-progress{
+    width:100%;
+    height:3px;
+    background:#101510;
+    margin-top:25px;
     overflow:hidden;
 }
 
-.loader-line span{
+.boot-progress span{
     display:block;
-
-    width:100%;
+    width:0;
     height:100%;
-
-    background:var(--red);
-
-    transform:translateX(-100%);
-
-    animation:loader 1.5s ease forwards;
+    background:var(--green);
+    animation:bootProgress 2s ease forwards;
 }
 
-@keyframes loader{
-    to{
-        transform:translateX(0);
-    }
+@keyframes bootProgress{
+    to{width:100%}
 }
 
+@keyframes glitchText{
+    0%,90%,100%{transform:none}
+    92%{transform:translateX(3px)}
+    94%{transform:translateX(-4px)}
+    96%{transform:translateX(1px)}
+}
 
 /* =========================================================
-   NAVBAR
-   ========================================================= */
+   TOP BAR
+========================================================= */
 
-.navbar{
+.topbar{
     position:fixed;
-
     top:0;
     left:0;
-
     width:100%;
-    height:var(--nav);
-
-    z-index:1000;
-
-    border-bottom:1px solid transparent;
-
-    transition:
-        background .3s ease,
-        border-color .3s ease;
-}
-
-.navbar.scrolled{
-    background:rgba(7,7,7,.9);
-
-    border-color:var(--border);
-
-    backdrop-filter:blur(18px);
-}
-
-.nav-inner{
-    width:min(calc(100% - 50px),var(--max));
-    height:100%;
-
-    margin:auto;
-
+    height:52px;
+    z-index:5000;
     display:flex;
     align-items:center;
+    justify-content:space-between;
+    padding:0 25px;
+    background:rgba(3,4,4,.78);
+    border-bottom:1px solid var(--line);
+    backdrop-filter:blur(15px);
+    font-family:var(--mono);
+    font-size:10px;
 }
 
-.logo{
-    font-size:.72rem;
-    font-weight:800;
-
-    letter-spacing:.2em;
-}
-
-.logo span{
-    color:#555;
-}
-
-.nav-links{
-    margin-left:auto;
-
+.system{
     display:flex;
-    gap:28px;
+    align-items:center;
+    gap:9px;
+    color:var(--muted);
 }
 
-.nav-links a{
-    position:relative;
-
-    color:#777;
-
-    font-size:.55rem;
-    font-weight:700;
-
-    letter-spacing:.18em;
-
-    transition:color .2s ease;
+.status-dot{
+    width:7px;
+    height:7px;
+    background:var(--green);
+    box-shadow:0 0 12px var(--green);
+    border-radius:50%;
+    animation:pulse 1.5s infinite;
 }
 
-.nav-links a:hover{
-    color:white;
+@keyframes pulse{
+    50%{opacity:.35}
 }
 
-.nav-links a::after{
-    content:"";
-
-    position:absolute;
-
-    left:0;
-    bottom:-7px;
-
-    width:0;
-    height:1px;
-
-    background:var(--red);
-
-    transition:.25s ease;
+.top-code{
+    color:#374139;
 }
-
-.nav-links a:hover::after{
-    width:100%;
-}
-
-.nav-play{
-    margin-left:30px;
-
-    padding:9px 15px;
-
-    border:1px solid rgba(165,31,31,.45);
-
-    font-size:.52rem;
-    font-weight:700;
-
-    letter-spacing:.16em;
-
-    transition:.25s ease;
-}
-
-.nav-play:hover{
-    background:var(--red);
-    border-color:var(--red);
-}
-
-.menu{
-    display:none;
-
-    margin-left:auto;
-
-    width:38px;
-    height:38px;
-
-    background:none;
-
-    border:1px solid var(--border);
-
-    cursor:pointer;
-}
-
-.menu span{
-    display:block;
-
-    width:17px;
-    height:1px;
-
-    margin:4px auto;
-
-    background:white;
-
-    transition:.25s ease;
-}
-
-.menu.open span:first-child{
-    transform:translateY(5px) rotate(45deg);
-}
-
-.menu.open span:last-child{
-    transform:translateY(-5px) rotate(-45deg);
-}
-
 
 /* =========================================================
    HERO
-   ========================================================= */
+========================================================= */
 
 .hero{
     position:relative;
-
     min-height:100svh;
-
-    display:flex;
-    align-items:flex-end;
-
     overflow:hidden;
+    display:flex;
+    align-items:center;
+    background:#020303;
 }
 
-.hero-image{
+.hero-bg{
     position:absolute;
     inset:0;
-
     width:100%;
     height:100%;
-
     object-fit:cover;
-
+    opacity:.38;
     filter:
-        brightness(.42)
-        contrast(1.08)
-        saturate(.55);
-
-    transform:scale(1.03);
-
-    will-change:transform;
+        grayscale(1)
+        contrast(1.4)
+        brightness(.55);
+    transform:scale(1.08);
+    animation:slowZoom 16s ease-in-out infinite alternate;
 }
 
-.hero-overlay{
+@keyframes slowZoom{
+    to{transform:scale(1.16)}
+}
+
+.hero-scan{
     position:absolute;
     inset:0;
-
     background:
         linear-gradient(
             90deg,
-            rgba(0,0,0,.9),
-            rgba(0,0,0,.25) 70%,
-            rgba(0,0,0,.6)
-        ),
-        linear-gradient(
-            0deg,
-            rgba(0,0,0,.95),
-            transparent 55%
+            rgba(0,0,0,.95) 0%,
+            rgba(0,0,0,.65) 45%,
+            rgba(0,0,0,.25) 100%
         );
 }
 
 .hero-content{
     position:relative;
     z-index:2;
-
-    width:min(calc(100% - 50px),var(--max));
-
+    width:min(1200px,calc(100% - 50px));
     margin:auto;
-
-    padding-bottom:100px;
+    padding-top:70px;
 }
 
-.hero-small{
-    display:flex;
-    align-items:center;
+.classification{
+    display:inline-flex;
     gap:12px;
-
-    color:#999;
-
-    font-size:.55rem;
-    font-weight:700;
-
-    letter-spacing:.25em;
+    align-items:center;
+    color:var(--green);
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:.18em;
+    border:1px solid var(--line);
+    padding:9px 13px;
+    background:rgba(0,0,0,.45);
 }
 
-.hero-small::before{
-    content:"";
-
-    width:28px;
-    height:1px;
-
-    background:var(--red);
+.classification::before{
+    content:"●";
+    color:var(--red);
+    animation:pulse 1s infinite;
 }
 
 .hero h1{
-    margin-top:18px;
+    margin-top:30px;
+    font-size:clamp(4rem,12vw,11rem);
+    line-height:.75;
+    letter-spacing:-.09em;
+    font-weight:700;
+    max-width:950px;
+}
 
-    font-size:clamp(4.5rem,12vw,10rem);
-
-    font-weight:900;
-
-    line-height:.78;
-
-    letter-spacing:-.08em;
+.hero h1 span{
+    color:transparent;
+    -webkit-text-stroke:1px rgba(215,221,216,.5);
 }
 
 .hero-sub{
-    margin-top:28px;
-
-    color:#aaa;
-
-    font-size:.78rem;
-
-    letter-spacing:.12em;
-
-    line-height:1.7;
-}
-
-.hero-actions{
-    display:flex;
-    gap:10px;
-
-    margin-top:30px;
-}
-
-.button{
-    min-height:45px;
-
-    padding:0 20px;
-
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-
-    border:1px solid rgba(255,255,255,.18);
-
-    background:rgba(0,0,0,.3);
-
-    color:white;
-
-    font-size:.53rem;
-    font-weight:700;
-
-    letter-spacing:.18em;
-
-    cursor:pointer;
-
-    transition:
-        background .25s ease,
-        border-color .25s ease,
-        transform .25s ease;
-}
-
-.button:hover{
-    background:var(--red);
-
-    border-color:var(--red);
-
-    transform:translateY(-2px);
-}
-
-.button.red{
-    background:rgba(120,20,20,.35);
-
-    border-color:rgba(165,31,31,.55);
-}
-
-.hero-scroll{
-    position:absolute;
-
-    bottom:25px;
-    right:30px;
-
-    color:#555;
-
-    font-size:.48rem;
-
-    letter-spacing:.2em;
-
-    writing-mode:vertical-rl;
-}
-
-
-/* =========================================================
-   GENERAL
-   ========================================================= */
-
-.section{
-    padding:120px 0;
-}
-
-.container{
-    width:min(calc(100% - 50px),var(--max));
-    margin:auto;
-}
-
-.label{
-    color:#555;
-
-    font-size:.53rem;
-    font-weight:700;
-
-    letter-spacing:.25em;
-}
-
-.title{
-    margin-top:15px;
-
-    font-size:clamp(3rem,7vw,6.5rem);
-
-    font-weight:900;
-
-    line-height:.85;
-
-    letter-spacing:-.07em;
-}
-
-.title span{
-    color:#555;
-}
-
-.description{
-    max-width:600px;
-
-    margin-top:24px;
-
-    color:#777;
-
-    font-size:.85rem;
-
-    line-height:1.8;
-}
-
-
-/* =========================================================
-   REVEAL
-   ========================================================= */
-
-.reveal{
-    opacity:0;
-
-    transform:translateY(25px);
-
-    transition:
-        opacity .7s ease,
-        transform .7s ease;
-}
-
-.reveal.visible{
-    opacity:1;
-
-    transform:none;
-}
-
-
-/* =========================================================
-   STORY
-   ========================================================= */
-
-.story{
-    background:#090909;
-}
-
-.story-grid{
-    margin-top:70px;
-
-    display:grid;
-
-    grid-template-columns:.8fr 1.2fr;
-
-    gap:100px;
-}
-
-.story-big{
-    font-size:clamp(2rem,4vw,4rem);
-
-    font-weight:800;
-
-    line-height:.95;
-
-    letter-spacing:-.05em;
-}
-
-.story-copy{
-    color:#777;
-
-    font-size:.88rem;
-
+    margin-top:38px;
+    max-width:520px;
+    color:#87928b;
+    font-family:var(--mono);
+    font-size:11px;
     line-height:1.9;
 }
 
-.story-copy p+p{
-    margin-top:20px;
-}
-
-.mystery{
+.hero-buttons{
+    display:flex;
+    gap:10px;
     margin-top:35px;
-
-    padding:18px;
-
-    border-left:1px solid var(--red);
-
-    color:#999;
-
-    font-size:.55rem;
-
-    letter-spacing:.16em;
-
-    text-transform:uppercase;
+    flex-wrap:wrap;
 }
 
+.btn{
+    min-height:48px;
+    padding:0 20px;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    border:1px solid var(--line);
+    background:#070a08;
+    color:var(--text);
+    font-family:var(--mono);
+    font-size:10px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.btn:hover{
+    background:var(--green);
+    color:#000;
+    border-color:var(--green);
+    transform:translateY(-2px);
+}
+
+.btn.primary{
+    background:var(--green);
+    color:#000;
+    border-color:var(--green);
+}
+
+.btn.primary:hover{
+    background:#c2ffd0;
+}
+
+.hero-coordinates{
+    position:absolute;
+    right:25px;
+    bottom:30px;
+    color:#3d4741;
+    font-family:var(--mono);
+    font-size:9px;
+    writing-mode:vertical-rl;
+}
+
+/* =========================================================
+   TERMINAL INTRO
+========================================================= */
+
+.section{
+    padding:140px 0;
+    position:relative;
+}
+
+.container{
+    width:min(1100px,calc(100% - 45px));
+    margin:auto;
+}
+
+.section-code{
+    color:var(--green);
+    font-family:var(--mono);
+    font-size:10px;
+    margin-bottom:25px;
+}
+
+.section-code::before{
+    content:"> ";
+    color:var(--red);
+}
+
+.big-title{
+    font-size:clamp(3rem,8vw,8rem);
+    line-height:.8;
+    letter-spacing:-.08em;
+    max-width:900px;
+}
+
+.big-title .ghost{
+    color:#242a27;
+}
+
+.terminal{
+    margin-top:65px;
+    border:1px solid var(--line);
+    background:rgba(5,8,6,.9);
+    font-family:var(--mono);
+}
+
+.terminal-head{
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 14px;
+    border-bottom:1px solid var(--line);
+    color:#46534b;
+    font-size:9px;
+}
+
+.terminal-body{
+    padding:30px;
+    font-size:11px;
+    line-height:2.1;
+    color:#77827c;
+}
+
+.terminal-body .green{
+    color:var(--green);
+}
+
+.terminal-body .red{
+    color:var(--red);
+}
+
+.cursor{
+    display:inline-block;
+    width:7px;
+    height:13px;
+    background:var(--green);
+    vertical-align:middle;
+    animation:blink .8s infinite;
+}
+
+@keyframes blink{
+    50%{opacity:0}
+}
+
+/* =========================================================
+   STORY
+========================================================= */
+
+.story-grid{
+    margin-top:70px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:2px;
+    border:1px solid var(--line);
+}
+
+.story-block{
+    min-height:310px;
+    padding:35px;
+    background:var(--panel);
+    border:1px solid rgba(145,255,176,.05);
+}
+
+.story-number{
+    color:#29332d;
+    font-family:var(--mono);
+    font-size:50px;
+    font-weight:600;
+}
+
+.story-block h3{
+    margin-top:35px;
+    font-size:22px;
+}
+
+.story-block p{
+    margin-top:12px;
+    color:#657068;
+    font-family:var(--mono);
+    font-size:10px;
+    line-height:1.9;
+}
+
+.story-block.danger{
+    background:
+        linear-gradient(rgba(120,0,0,.08),rgba(120,0,0,.08)),
+        var(--panel);
+}
+
+.story-block.danger .story-number{
+    color:#482323;
+}
 
 /* =========================================================
    GAMEPLAY
-   ========================================================= */
+========================================================= */
 
 .gameplay{
-    background:#060606;
+    background:#050706;
 }
 
-.cards{
-    margin-top:60px;
-
+.system-grid{
+    margin-top:70px;
     display:grid;
-
     grid-template-columns:repeat(3,1fr);
-
-    border-top:1px solid var(--border);
-    border-left:1px solid var(--border);
+    gap:10px;
 }
 
-.card{
-    min-height:220px;
-
-    padding:30px;
-
-    border-right:1px solid var(--border);
-    border-bottom:1px solid var(--border);
-
-    transition:
-        background .25s ease,
-        transform .25s ease;
+.system-card{
+    min-height:250px;
+    padding:28px;
+    border:1px solid var(--line);
+    background:linear-gradient(145deg,#080c09,#050706);
+    position:relative;
+    overflow:hidden;
+    transition:.3s;
 }
 
-.card:hover{
-    background:#0d0d0d;
-
-    transform:translateY(-3px);
-}
-
-.card-number{
-    color:#444;
-
-    font-size:.52rem;
-
-    letter-spacing:.18em;
-}
-
-.card h3{
-    margin-top:45px;
-
-    font-size:1.25rem;
-
-    letter-spacing:-.03em;
-}
-
-.card p{
-    margin-top:12px;
-
-    color:#666;
-
-    font-size:.7rem;
-
-    line-height:1.7;
-}
-
-
-/* =========================================================
-   OBJECTIVES
-   ========================================================= */
-
-.objectives{
-    background:#090909;
-}
-
-.objectives-list{
-    margin-top:60px;
-
-    border-top:1px solid var(--border);
-}
-
-.objective{
-    display:grid;
-
-    grid-template-columns:70px 1fr auto;
-
-    align-items:center;
-
-    min-height:105px;
-
-    gap:25px;
-
-    border-bottom:1px solid var(--border);
-
-    transition:.25s ease;
-}
-
-.objective:hover{
-    padding-left:12px;
-
-    background:rgba(255,255,255,.015);
-}
-
-.objective-number{
-    color:#444;
-
-    font-size:1.8rem;
-
-    font-weight:900;
-}
-
-.objective h3{
-    font-size:1.1rem;
-
-    letter-spacing:-.02em;
-}
-
-.objective p{
-    margin-top:5px;
-
-    color:#666;
-
-    font-size:.65rem;
-}
-
-.objective-status{
-    width:8px;
-    height:8px;
-
-    border:1px solid #555;
-
+.system-card::after{
+    content:"";
+    position:absolute;
+    width:100px;
+    height:100px;
+    right:-50px;
+    bottom:-50px;
+    border:1px solid var(--line);
     transform:rotate(45deg);
 }
 
+.system-card:hover{
+    border-color:rgba(145,255,176,.35);
+    transform:translateY(-5px);
+}
+
+.card-id{
+    color:#39443d;
+    font-family:var(--mono);
+    font-size:9px;
+}
+
+.system-card h3{
+    margin-top:55px;
+    font-size:22px;
+}
+
+.system-card p{
+    margin-top:12px;
+    color:#59645d;
+    font-family:var(--mono);
+    font-size:10px;
+    line-height:1.8;
+}
 
 /* =========================================================
-   ATMOSPHERE
-   ========================================================= */
+   THREAT
+========================================================= */
 
-.atmosphere{
-    min-height:560px;
-
+.threat{
+    min-height:650px;
     display:flex;
     align-items:center;
+    overflow:hidden;
+}
 
+.threat::before{
+    content:"";
+    position:absolute;
+    inset:0;
     background:
         linear-gradient(
             90deg,
-            rgba(0,0,0,.95),
-            rgba(0,0,0,.5),
-            rgba(0,0,0,.95)
+            #030404 0%,
+            rgba(3,4,4,.85) 40%,
+            rgba(3,4,4,.25) 100%
         ),
         url("./banner.png") center/cover;
-
-    background-attachment:fixed;
+    filter:grayscale(1) contrast(1.4);
+    opacity:.55;
 }
 
-.tags{
-    display:flex;
-
-    flex-wrap:wrap;
-
-    gap:7px;
-
-    margin-top:28px;
+.threat-content{
+    position:relative;
+    z-index:2;
 }
 
-.tag{
-    padding:8px 11px;
-
-    border:1px solid var(--border);
-
-    color:#666;
-
-    font-size:.5rem;
-
-    letter-spacing:.15em;
+.warning{
+    display:inline-block;
+    color:var(--red);
+    border:1px solid rgba(255,48,48,.3);
+    padding:8px 12px;
+    font-family:var(--mono);
+    font-size:9px;
+    letter-spacing:.12em;
 }
 
+.threat h2{
+    margin-top:25px;
+    font-size:clamp(3.5rem,9vw,9rem);
+    line-height:.75;
+    letter-spacing:-.09em;
+}
+
+.threat-copy{
+    margin-top:35px;
+    max-width:500px;
+    color:#77817b;
+    font-family:var(--mono);
+    font-size:11px;
+    line-height:2;
+}
 
 /* =========================================================
    MEDIA
-   ========================================================= */
-
-.media{
-    background:#080808;
-}
+========================================================= */
 
 .media-grid{
-    margin-top:60px;
-
+    margin-top:65px;
     display:grid;
-
-    grid-template-columns:repeat(2,1fr);
-
-    gap:12px;
+    grid-template-columns:1.4fr .6fr;
+    grid-auto-rows:220px;
+    gap:10px;
 }
 
 .media-card{
-    min-height:300px;
-
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    border:1px solid var(--border);
-
-    background:#0b0b0b;
-
     position:relative;
-
     overflow:hidden;
+    border:1px solid var(--line);
+    background:#080b09;
 }
 
-.media-card::before{
-    content:"";
+.media-card.large{
+    grid-row:span 2;
+}
 
+.media-card img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    filter:grayscale(1) contrast(1.3);
+    opacity:.55;
+    transition:.5s;
+}
+
+.media-card:hover img{
+    transform:scale(1.05);
+    opacity:.8;
+}
+
+.media-overlay{
     position:absolute;
-    inset:12px;
-
-    border:1px solid rgba(255,255,255,.035);
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    padding:20px;
+    background:linear-gradient(transparent,rgba(0,0,0,.9));
 }
 
-.media-info{
-    text-align:center;
+.media-overlay span{
+    color:var(--green);
+    font-family:var(--mono);
+    font-size:9px;
 }
 
-.media-number{
-    color:#292929;
-
-    font-size:4rem;
-
-    font-weight:900;
+.media-overlay h3{
+    margin-top:5px;
+    font-size:20px;
 }
-
-.media-info h3{
-    font-size:1rem;
-
-    letter-spacing:-.02em;
-}
-
-.media-info p{
-    margin-top:7px;
-
-    color:#555;
-
-    font-size:.48rem;
-
-    letter-spacing:.17em;
-}
-
 
 /* =========================================================
    PLAY
-   ========================================================= */
+========================================================= */
 
 .play{
-    background:#060606;
+    background:#020303;
 }
 
-.play-head{
-    text-align:center;
+.play-box{
+    margin-top:65px;
+    border:1px solid var(--green);
+    box-shadow:0 0 40px rgba(145,255,176,.05);
 }
 
-.play-head .description{
-    margin-left:auto;
-    margin-right:auto;
+.play-header{
+    padding:20px;
+    display:flex;
+    justify-content:space-between;
+    border-bottom:1px solid var(--line);
+    font-family:var(--mono);
+    font-size:10px;
+}
+
+.live{
+    color:var(--green);
 }
 
 .platforms{
-    margin-top:55px;
-
     display:grid;
-
     grid-template-columns:1fr 1fr;
-
-    gap:15px;
+    gap:1px;
+    background:var(--line);
 }
 
 .platform{
-    padding:25px;
-
-    border:1px solid var(--border);
-
-    background:#0a0a0a;
-}
-
-.platform-head{
-    display:flex;
-
-    justify-content:space-between;
-    align-items:center;
-
-    margin-bottom:20px;
+    padding:30px;
+    background:#050706;
 }
 
 .platform-name{
-    font-size:1.2rem;
-
-    font-weight:800;
-
-    letter-spacing:-.03em;
+    font-size:25px;
+    font-weight:600;
 }
 
 .platform-status{
-    color:#8f2929;
-
-    font-size:.45rem;
-
-    font-weight:700;
-
-    letter-spacing:.15em;
+    margin-top:7px;
+    color:var(--green);
+    font-family:var(--mono);
+    font-size:9px;
 }
 
 .embed{
-    width:100%;
-
+    margin-top:25px;
     display:flex;
-
     justify-content:center;
-
-    overflow:hidden;
+    min-height:180px;
+    align-items:center;
 }
 
 .embed iframe{
     max-width:100%;
-
     border:0;
 }
 
-.play-note{
-    margin-top:25px;
-
-    text-align:center;
-
-    color:#444;
-
-    font-size:.5rem;
-
-    letter-spacing:.17em;
+.play-footer{
+    padding:15px 20px;
+    border-top:1px solid var(--line);
+    color:#4b5750;
+    font-family:var(--mono);
+    font-size:9px;
 }
-
 
 /* =========================================================
-   ABOUT
-   ========================================================= */
+   DEVELOPMENT
+========================================================= */
 
-.about{
-    background:#090909;
-}
-
-.about-grid{
+.dev-grid{
     margin-top:65px;
-
     display:grid;
-
     grid-template-columns:1fr 1fr;
-
-    gap:100px;
+    gap:15px;
 }
 
-.about-main{
-    font-size:clamp(1.7rem,3vw,2.8rem);
-
-    font-weight:700;
-
-    line-height:1.05;
-
-    letter-spacing:-.05em;
+.dev-panel{
+    border:1px solid var(--line);
+    background:var(--panel);
 }
 
-.about-main span{
-    color:var(--red);
+.dev-head{
+    padding:18px;
+    border-bottom:1px solid var(--line);
+    font-family:var(--mono);
+    font-size:10px;
 }
 
-.about-copy{
-    color:#707070;
-
-    font-size:.85rem;
-
-    line-height:1.9;
-}
-
-.about-copy p+p{
-    margin-top:20px;
-}
-
-.tech{
-    margin-top:60px;
-
-    padding-top:20px;
-
-    border-top:1px solid var(--border);
-
+.dev-row{
     display:flex;
-
-    flex-wrap:wrap;
-
-    gap:7px;
-}
-
-
-/* =========================================================
-   ROADMAP
-   ========================================================= */
-
-.roadmap-grid{
-    margin-top:60px;
-
-    display:grid;
-
-    grid-template-columns:1fr 1fr;
-
-    gap:12px;
-}
-
-.roadmap-card{
-    padding:25px;
-
-    border:1px solid var(--border);
-
-    background:#0a0a0a;
-}
-
-.roadmap-card h3{
-    margin-bottom:15px;
-
-    font-size:1rem;
-
-    letter-spacing:-.02em;
-}
-
-.roadmap-row{
-    display:flex;
-
+    justify-content:space-between;
     align-items:center;
-
-    gap:10px;
-
-    padding:10px 0;
-
-    border-bottom:1px solid rgba(255,255,255,.04);
-
-    color:#666;
-
-    font-size:.6rem;
+    padding:17px 18px;
+    border-bottom:1px solid rgba(145,255,176,.05);
+    font-family:var(--mono);
+    font-size:10px;
+    color:#69746d;
 }
 
-.roadmap-row:last-child{
+.dev-row:last-child{
     border-bottom:0;
 }
 
-.check{
-    width:12px;
-    height:12px;
-
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    border:1px solid #444;
-
-    font-size:.45rem;
+.done{
+    color:var(--green);
 }
 
-.check.done{
-    color:#a94a4a;
-
-    border-color:#632525;
+.pending{
+    color:#545e57;
 }
 
+.progress{
+    margin-top:65px;
+}
+
+.progress-bar{
+    margin-top:15px;
+    width:100%;
+    height:4px;
+    background:#111713;
+}
+
+.progress-bar span{
+    display:block;
+    width:68%;
+    height:100%;
+    background:var(--green);
+    box-shadow:0 0 15px rgba(145,255,176,.3);
+}
 
 /* =========================================================
    FAQ
-   ========================================================= */
-
-.faq{
-    background:#060606;
-}
+========================================================= */
 
 .faq-list{
+    margin-top:65px;
     max-width:850px;
-
-    margin-top:55px;
 }
 
 .faq-item{
-    border-top:1px solid var(--border);
+    border-top:1px solid var(--line);
 }
 
 .faq-item:last-child{
-    border-bottom:1px solid var(--border);
+    border-bottom:1px solid var(--line);
 }
 
 .faq-question{
     width:100%;
-
     padding:23px 0;
-
-    display:flex;
-
-    justify-content:space-between;
-    align-items:center;
-
     background:none;
     border:0;
-
-    color:#ddd;
-
+    color:var(--text);
+    display:flex;
+    justify-content:space-between;
     text-align:left;
-
     cursor:pointer;
+    font-family:var(--mono);
+    font-size:11px;
 }
 
 .faq-plus{
-    position:relative;
-
-    width:15px;
-    height:15px;
-}
-
-.faq-plus::before,
-.faq-plus::after{
-    content:"";
-
-    position:absolute;
-
-    left:50%;
-    top:50%;
-
-    width:13px;
-    height:1px;
-
-    background:#666;
-
-    transform:translate(-50%,-50%);
-
-    transition:.25s ease;
-}
-
-.faq-plus::after{
-    transform:
-        translate(-50%,-50%)
-        rotate(90deg);
-}
-
-.faq-item.open .faq-plus::after{
-    transform:
-        translate(-50%,-50%)
-        rotate(0);
+    color:var(--green);
+    font-size:17px;
 }
 
 .faq-answer{
     max-height:0;
-
     overflow:hidden;
-
-    transition:max-height .35s ease;
+    transition:max-height .3s ease;
 }
 
 .faq-answer p{
-    padding:0 40px 22px 0;
-
-    color:#666;
-
-    font-size:.75rem;
-
-    line-height:1.7;
+    padding:0 50px 25px 0;
+    color:#5e6962;
+    font-family:var(--mono);
+    font-size:10px;
+    line-height:1.9;
 }
 
+.faq-item.open .faq-plus{
+    color:var(--red);
+}
 
 /* =========================================================
    FOOTER
-   ========================================================= */
+========================================================= */
 
-.footer{
-    padding:70px 0 25px;
-
-    background:#030303;
-
-    border-top:1px solid var(--border);
+footer{
+    padding:90px 0 25px;
+    border-top:1px solid var(--line);
+    background:#010202;
 }
 
-.footer-top{
-    display:flex;
+.footer-logo{
+    font-size:clamp(4rem,12vw,12rem);
+    line-height:.7;
+    letter-spacing:-.1em;
+    font-weight:700;
+}
 
+.footer-logo span{
+    color:#1e2521;
+}
+
+.footer-info{
+    margin-top:55px;
+    display:flex;
     justify-content:space-between;
-
-    gap:40px;
+    gap:30px;
+    font-family:var(--mono);
+    font-size:9px;
+    color:#414b45;
 }
 
-.footer-title{
-    font-size:clamp(2.5rem,6vw,6rem);
-
-    font-weight:900;
-
-    line-height:.8;
-
-    letter-spacing:-.08em;
+.footer-info strong{
+    color:var(--green);
+    font-weight:400;
 }
-
-.footer-sub{
-    margin-top:20px;
-
-    color:#444;
-
-    font-size:.5rem;
-
-    letter-spacing:.2em;
-}
-
-.footer-links{
-    display:flex;
-
-    flex-wrap:wrap;
-
-    gap:20px;
-
-    align-content:flex-start;
-}
-
-.footer-links a{
-    color:#555;
-
-    font-size:.5rem;
-
-    letter-spacing:.15em;
-
-    transition:.2s ease;
-}
-
-.footer-links a:hover{
-    color:white;
-}
-
-.footer-bottom{
-    margin-top:60px;
-
-    padding-top:18px;
-
-    border-top:1px solid rgba(255,255,255,.04);
-
-    display:flex;
-
-    justify-content:space-between;
-
-    color:#383838;
-
-    font-size:.45rem;
-
-    letter-spacing:.15em;
-}
-
 
 /* =========================================================
    MODAL
-   ========================================================= */
+========================================================= */
 
 .modal{
     position:fixed;
     inset:0;
-
-    z-index:11000;
-
+    z-index:15000;
+    background:rgba(0,0,0,.94);
     display:flex;
-
     align-items:center;
     justify-content:center;
-
     padding:20px;
-
-    background:rgba(0,0,0,.9);
-
-    backdrop-filter:blur(15px);
-
     opacity:0;
     visibility:hidden;
-
-    transition:.3s ease;
+    transition:.3s;
 }
 
 .modal.open{
@@ -1306,224 +917,139 @@ body::before{
 }
 
 .modal-box{
-    width:min(650px,100%);
-
-    padding:60px 30px;
-
-    border:1px solid var(--border);
-
-    background:#090909;
-
-    text-align:center;
+    width:min(750px,100%);
+    border:1px solid var(--red);
+    background:#040505;
+    padding:50px;
+    position:relative;
+    box-shadow:0 0 80px rgba(255,0,0,.08);
 }
 
-.modal-box h2{
-    font-size:clamp(2.5rem,6vw,5rem);
-
-    line-height:.85;
-
-    letter-spacing:-.07em;
+.modal-label{
+    color:var(--red);
+    font-family:var(--mono);
+    font-size:9px;
 }
 
-.modal-box p{
-    margin-top:18px;
-
-    color:#555;
-
-    font-size:.55rem;
-
-    letter-spacing:.15em;
+.modal h2{
+    margin-top:20px;
+    font-size:clamp(3rem,8vw,7rem);
+    line-height:.75;
+    letter-spacing:-.09em;
 }
 
-.modal-close{
-    margin-top:28px;
+.modal p{
+    margin-top:25px;
+    color:#626d66;
+    font-family:var(--mono);
+    font-size:10px;
+    line-height:1.8;
 }
 
-.modal-x{
+.close{
     position:absolute;
-
-    top:20px;
-    right:25px;
-
-    border:0;
-
+    top:15px;
+    right:18px;
     background:none;
-
-    color:#777;
-
-    font-size:1.5rem;
-
+    border:0;
+    color:#68726c;
+    font-size:25px;
     cursor:pointer;
 }
 
-
 /* =========================================================
-   TABLET
-   ========================================================= */
+   REVEAL
+========================================================= */
 
-@media(max-width:900px){
-
-    .nav-links{
-        gap:17px;
-    }
-
-    .cards{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .story-grid,
-    .about-grid{
-        gap:50px;
-    }
-
+.reveal{
+    opacity:0;
+    transform:translateY(30px);
+    transition:opacity .8s ease,transform .8s ease;
 }
 
+.reveal.visible{
+    opacity:1;
+    transform:none;
+}
 
 /* =========================================================
    MOBILE
-   ========================================================= */
+========================================================= */
 
-@media(max-width:700px){
+@media(max-width:800px){
 
-    .nav-inner,
-    .hero-content,
-    .container{
-        width:calc(100% - 35px);
-    }
-
-    .nav-links{
-        position:absolute;
-
-        top:var(--nav);
-        left:0;
-
-        width:100%;
-
-        padding:22px 18px;
-
-        display:flex;
-
-        flex-direction:column;
-
-        gap:18px;
-
-        background:#080808;
-
-        border-bottom:1px solid var(--border);
-
-        transform:translateY(-10px);
-
-        opacity:0;
-        visibility:hidden;
-
-        transition:.25s ease;
-    }
-
-    .nav-links.open{
-        transform:none;
-
-        opacity:1;
-        visibility:visible;
-    }
-
-    .nav-play{
+    .top-code{
         display:none;
     }
 
-    .menu{
-        display:block;
-    }
-
     .hero-content{
-        padding-bottom:80px;
+        width:calc(100% - 35px);
     }
 
     .hero h1{
-        font-size:clamp(3.6rem,16vw,6rem);
-    }
-
-    .hero-sub{
-        font-size:.65rem;
-    }
-
-    .hero-actions{
-        flex-direction:column;
-
-        width:100%;
-    }
-
-    .button{
-        width:100%;
-    }
-
-    .section{
-        padding:85px 0;
+        font-size:clamp(4rem,17vw,7rem);
     }
 
     .story-grid,
-    .about-grid{
-        grid-template-columns:1fr;
-    }
-
-    .cards{
-        grid-template-columns:1fr;
-    }
-
-    .objective{
-        grid-template-columns:48px 1fr auto;
-
-        gap:15px;
-    }
-
+    .dev-grid,
     .platforms{
+        grid-template-columns:1fr;
+    }
+
+    .system-grid{
         grid-template-columns:1fr;
     }
 
     .media-grid{
         grid-template-columns:1fr;
+        grid-auto-rows:230px;
     }
 
-    .roadmap-grid{
-        grid-template-columns:1fr;
+    .media-card.large{
+        grid-row:span 1;
     }
 
-    .footer-top{
+    .section{
+        padding:95px 0;
+    }
+
+    .footer-info{
         flex-direction:column;
     }
-
 }
 
+@media(max-width:500px){
 
-/* =========================================================
-   SMALL MOBILE
-   ========================================================= */
+    .topbar{
+        padding:0 15px;
+    }
 
-@media(max-width:450px){
-
-    .hero-scroll{
+    .hero-coordinates{
         display:none;
     }
 
-    .objective-status{
-        display:none;
-    }
-
-    .objective h3{
-        font-size:.95rem;
-    }
-
-    .footer-bottom{
+    .hero-buttons{
         flex-direction:column;
-
-        gap:10px;
     }
 
+    .btn{
+        width:100%;
+        justify-content:center;
+    }
+
+    .terminal-body{
+        padding:20px;
+        font-size:9px;
+    }
+
+    .story-block{
+        padding:25px;
+    }
+
+    .modal-box{
+        padding:35px 22px;
+    }
 }
-
-
-/* =========================================================
-   REDUCED MOTION
-   ========================================================= */
 
 @media(prefers-reduced-motion:reduce){
 
@@ -1534,602 +1060,519 @@ body::before{
         transition-duration:.001ms !important;
         scroll-behavior:auto !important;
     }
-
 }
-
 </style>
+
 </head>
 
-
-<body class="lock">
-
+<body>
 
 <!-- =========================================================
-     LOADER
-     ========================================================= -->
+     BOOT
+========================================================= -->
 
-<div class="loader" id="loader">
+<div class="boot" id="boot">
+    <div class="boot-terminal">
 
-    <div class="loader-inner">
+```
+    <div class="boot-title">
+        THE APOCALYPSE
+    </div>
 
-        <div class="loader-title">
-            THE APOCALYPSE
-        </div>
+    <div class="boot-line">
+        <span>[OK]</span> INITIALIZING ARCHIVE...
+    </div>
 
-        <div class="loader-line">
-            <span></span>
-        </div>
+    <div class="boot-line">
+        <span>[OK]</span> LOADING SURVIVAL DATABASE...
+    </div>
+
+    <div class="boot-line">
+        <span>[OK]</span> ESTABLISHING CONNECTION...
+    </div>
+
+    <div class="boot-line">
+        <span style="color:#ff3030">[WARN]</span>
+        SIGNAL INTEGRITY: 41%
+    </div>
+
+    <div class="boot-line">
+        <span>[...]</span> ACCESSING FILE: APOCALYPSE_01
+    </div>
+
+    <div class="boot-progress">
+        <span></span>
+    </div>
+
+</div>
+```
+
+</div>
+
+<!-- =========================================================
+     TOP BAR
+========================================================= -->
+
+<header class="topbar">
+
+```
+<div class="system">
+    <span class="status-dot"></span>
+    ARCHIVE ONLINE
+</div>
+
+<div class="top-code">
+    FILE // APOCALYPSE_01 // ACCESS: PUBLIC
+</div>
+
+<div>
+    2026
+</div>
+```
+
+</header>
+
+<!-- =========================================================
+     HERO
+========================================================= -->
+
+<section class="hero" id="home">
+
+```
+<img
+    src="./banner.png"
+    class="hero-bg"
+    alt="THE APOCALYPSE"
+>
+
+<div class="hero-scan"></div>
+
+<div class="hero-content">
+
+    <div class="classification">
+        SURVIVAL HORROR // CASE 001
+    </div>
+
+    <h1>
+        THE<br>
+        <span>APOCALYPSE</span>
+    </h1>
+
+    <div class="hero-sub">
+        THE WORLD DIDN'T END.<br>
+        SOMETHING ELSE HAPPENED.<br><br>
+
+        THIS ARCHIVE CONTAINS EVERYTHING
+        CURRENTLY KNOWN ABOUT THE INCIDENT.
+    </div>
+
+    <div class="hero-buttons">
+
+        <a href="#play" class="btn primary">
+            [ PLAY CURRENT BUILD ]
+        </a>
+
+        <button class="btn" id="trailer">
+            [ OPEN CLASSIFIED FILE ]
+        </button>
 
     </div>
 
 </div>
 
-
-<!-- =========================================================
-     NAVBAR
-     ========================================================= -->
-
-<header class="navbar" id="navbar">
-
-    <div class="nav-inner">
-
-        <a href="#home" class="logo">
-            THE <span>APOCALYPSE</span>
-        </a>
-
-        <nav class="nav-links" id="navLinks">
-
-            <a href="#home">HOME</a>
-            <a href="#story">STORY</a>
-            <a href="#gameplay">GAMEPLAY</a>
-            <a href="#media">MEDIA</a>
-            <a href="#about">ABOUT</a>
-            <a href="#faq">FAQ</a>
-
-        </nav>
-
-        <a href="#play" class="nav-play">
-            PLAY NOW
-        </a>
-
-        <button
-            class="menu"
-            id="menu"
-            aria-label="Open menu"
-        >
-            <span></span>
-            <span></span>
-        </button>
-
-    </div>
-
-</header>
-
-
-<main>
-
-
-<!-- =========================================================
-     HERO
-     ========================================================= -->
-
-<section class="hero" id="home">
-
-    <img
-        src="./banner.png"
-        alt="THE APOCALYPSE"
-        class="hero-image"
-        id="heroImage"
-    >
-
-    <div class="hero-overlay"></div>
-
-    <div class="hero-content">
-
-        <div class="hero-small">
-            FIRST-PERSON SURVIVAL HORROR
-        </div>
-
-        <h1>
-            THE<br>
-            APOCALYPSE
-        </h1>
-
-        <div class="hero-sub">
-            THE WORLD DIDN'T END.<br>
-            IT BECAME SOMETHING ELSE.
-        </div>
-
-        <div class="hero-actions">
-
-            <button
-                class="button red"
-                id="trailerButton"
-            >
-                WATCH TRAILER
-            </button>
-
-            <a
-                href="#play"
-                class="button"
-            >
-                PLAY CURRENT BUILD
-            </a>
-
-        </div>
-
-    </div>
-
-    <div class="hero-scroll">
-        SCROLL
-    </div>
+<div class="hero-coordinates">
+    SIGNAL // UNKNOWN // LOCATION LOST
+</div>
+```
 
 </section>
 
+<!-- =========================================================
+     ARCHIVE
+========================================================= -->
+
+<section class="section">
+
+```
+<div class="container">
+
+    <div class="section-code reveal">
+        ARCHIVE / 001
+    </div>
+
+    <h2 class="big-title reveal">
+        SOMETHING<br>
+        <span class="ghost">CHANGED.</span>
+    </h2>
+
+    <div class="terminal reveal">
+
+        <div class="terminal-head">
+            <span>incident.log</span>
+            <span>READ ONLY</span>
+        </div>
+
+        <div class="terminal-body">
+
+            <div>
+                <span class="green">SYSTEM:</span>
+                Incident timestamp unknown.
+            </div>
+
+            <div>
+                <span class="green">SYSTEM:</span>
+                Communication networks unstable.
+            </div>
+
+            <div>
+                <span class="green">SYSTEM:</span>
+                Civilian reports increasing.
+            </div>
+
+            <div>
+                <span class="red">WARNING:</span>
+                Several reports contradict known reality.
+            </div>
+
+            <br>
+
+            <div>
+                The night started normally.
+            </div>
+
+            <div>
+                It did not end normally.
+            </div>
+
+            <br>
+
+            <div>
+                <span class="green">SYSTEM:</span>
+                File continues...
+                <span class="cursor"></span>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+```
+
+</section>
 
 <!-- =========================================================
      STORY
-     ========================================================= -->
+========================================================= -->
 
-<section class="section story" id="story">
+<section class="section">
 
-    <div class="container">
+```
+<div class="container">
 
-        <div class="label reveal">
-            01 / THE STORY
-        </div>
+    <div class="section-code reveal">
+        INCIDENT REPORT
+    </div>
 
-        <h2 class="title reveal">
-            SOMETHING<br>
-            <span>CHANGED.</span>
-        </h2>
+    <h2 class="big-title reveal">
+        ONE NIGHT.<br>
+        <span class="ghost">NO WAY BACK.</span>
+    </h2>
 
-        <div class="story-grid">
+    <div class="story-grid">
 
-            <div class="story-big reveal">
-                ONE NIGHT.<br>
-                ONE HOUSE.<br>
-                NO WAY BACK.
+        <article class="story-block reveal">
+
+            <div class="story-number">
+                01
             </div>
 
-            <div class="story-copy reveal">
+            <h3>THE NIGHT</h3>
 
-                <p>
-                    It starts like an ordinary night.
-                </p>
+            <p>
+                It begins like any other night.
+                A routine journey.
+                A quiet environment.
+                Nothing unusual.
+            </p>
 
-                <p>
-                    A routine journey.
-                    A quiet city.
-                    A normal shift.
-                </p>
+        </article>
 
-                <p>
-                    Then things begin to feel wrong.
-                </p>
+        <article class="story-block reveal">
 
-                <p>
-                    Strange reports start appearing.
-                    Communication becomes unreliable.
-                    The streets slowly change.
-                </p>
-
-                <p>
-                    When the protagonist finally returns home,
-                    nothing feels familiar anymore.
-                </p>
-
-                <div class="mystery">
-                    Some things are better discovered than explained.
-                </div>
-
+            <div class="story-number">
+                02
             </div>
 
-        </div>
+            <h3>THE SIGNAL</h3>
+
+            <p>
+                Reports begin appearing.
+                Communications become unreliable.
+                Something is changing outside.
+            </p>
+
+        </article>
+
+        <article class="story-block reveal">
+
+            <div class="story-number">
+                03
+            </div>
+
+            <h3>THE RETURN</h3>
+
+            <p>
+                The protagonist returns home.
+                But the place that should feel familiar
+                no longer does.
+            </p>
+
+        </article>
+
+        <article class="story-block danger reveal">
+
+            <div class="story-number">
+                04
+            </div>
+
+            <h3>UNKNOWN</h3>
+
+            <p>
+                Some information has been removed
+                from this archive.
+                You are not supposed to know everything.
+            </p>
+
+        </article>
 
     </div>
 
-</section>
+</div>
+```
 
+</section>
 
 <!-- =========================================================
      GAMEPLAY
-     ========================================================= -->
+========================================================= -->
 
 <section class="section gameplay" id="gameplay">
 
-    <div class="container">
+```
+<div class="container">
 
-        <div class="label reveal">
-            02 / GAMEPLAY
-        </div>
+    <div class="section-code reveal">
+        SURVIVAL PROTOCOL
+    </div>
 
-        <h2 class="title reveal">
-            SURVIVE<br>
-            <span>THE NIGHT.</span>
-        </h2>
+    <h2 class="big-title reveal">
+        YOU ARE<br>
+        <span class="ghost">NOT SAFE.</span>
+    </h2>
 
-        <p class="description reveal">
-            Explore.
-            Investigate.
-            Solve.
-            Hide.
-            Survive.
-        </p>
+    <div class="system-grid">
 
+        <article class="system-card reveal">
+            <div class="card-id">SYS_001</div>
+            <h3>EXPLORE</h3>
+            <p>
+                Search abandoned environments.
+                Important information is rarely
+                placed where you expect it.
+            </p>
+        </article>
 
-        <div class="cards">
+        <article class="system-card reveal">
+            <div class="card-id">SYS_002</div>
+            <h3>INVESTIGATE</h3>
+            <p>
+                Objects, documents and environmental
+                details reveal pieces of the story.
+            </p>
+        </article>
 
-            <article class="card reveal">
+        <article class="system-card reveal">
+            <div class="card-id">SYS_003</div>
+            <h3>SOLVE</h3>
+            <p>
+                Understand the environment.
+                The game does not always tell you
+                what to do.
+            </p>
+        </article>
 
-                <div class="card-number">01</div>
+        <article class="system-card reveal">
+            <div class="card-id">SYS_004</div>
+            <h3>LIGHT</h3>
+            <p>
+                Your flashlight is useful.
+                Its battery is not infinite.
+            </p>
+        </article>
 
-                <h3>EXPLORATION</h3>
+        <article class="system-card reveal">
+            <div class="card-id">SYS_005</div>
+            <h3>HIDE</h3>
+            <p>
+                When the threat appears,
+                remaining unseen may be
+                your safest option.
+            </p>
+        </article>
 
-                <p>
-                    Explore dark environments and discover
-                    clues hidden throughout the world.
-                </p>
-
-            </article>
-
-
-            <article class="card reveal">
-
-                <div class="card-number">02</div>
-
-                <h3>PUZZLES</h3>
-
-                <p>
-                    Use objects and environmental clues
-                    to solve problems.
-                </p>
-
-            </article>
-
-
-            <article class="card reveal">
-
-                <div class="card-number">03</div>
-
-                <h3>FLASHLIGHT</h3>
-
-                <p>
-                    Darkness hides more than you think.
-                    Your flashlight is essential.
-                </p>
-
-            </article>
-
-
-            <article class="card reveal">
-
-                <div class="card-number">04</div>
-
-                <h3>LIMITED RESOURCES</h3>
-
-                <p>
-                    Batteries and useful items are limited.
-                    Choose when to use them.
-                </p>
-
-            </article>
-
-
-            <article class="card reveal">
-
-                <div class="card-number">05</div>
-
-                <h3>HIDING</h3>
-
-                <p>
-                    When something is nearby,
-                    staying hidden may be your only option.
-                </p>
-
-            </article>
-
-
-            <article class="card reveal">
-
-                <div class="card-number">06</div>
-
-                <h3>ENEMY AI</h3>
-
-                <p>
-                    The threat reacts to the environment
-                    and searches for signs of the player.
-                </p>
-
-            </article>
-
-
-        </div>
+        <article class="system-card reveal">
+            <div class="card-id">SYS_006</div>
+            <h3>SURVIVE</h3>
+            <p>
+                There is no guarantee that
+                the environment will give you
+                another chance.
+            </p>
+        </article>
 
     </div>
 
-</section>
+</div>
+```
 
+</section>
 
 <!-- =========================================================
-     OBJECTIVES
-     ========================================================= -->
+     THREAT
+========================================================= -->
 
-<section class="section objectives">
+<section class="section threat">
 
-    <div class="container">
+```
+<div class="container threat-content">
 
-        <div class="label reveal">
-            03 / OBJECTIVES
-        </div>
-
-        <h2 class="title reveal">
-            FIND A<br>
-            <span>WAY OUT.</span>
-        </h2>
-
-        <p class="description reveal">
-            The game will never simply tell you everything.
-            Explore the environment and figure things out yourself.
-        </p>
-
-
-        <div class="objectives-list">
-
-            <div class="objective reveal">
-
-                <div class="objective-number">
-                    01
-                </div>
-
-                <div>
-                    <h3>INVESTIGATE</h3>
-                    <p>Discover what happened.</p>
-                </div>
-
-                <div class="objective-status"></div>
-
-            </div>
-
-
-            <div class="objective reveal">
-
-                <div class="objective-number">
-                    02
-                </div>
-
-                <div>
-                    <h3>SEARCH</h3>
-                    <p>Find useful objects and clues.</p>
-                </div>
-
-                <div class="objective-status"></div>
-
-            </div>
-
-
-            <div class="objective reveal">
-
-                <div class="objective-number">
-                    03
-                </div>
-
-                <div>
-                    <h3>SOLVE</h3>
-                    <p>Understand what the environment is telling you.</p>
-                </div>
-
-                <div class="objective-status"></div>
-
-            </div>
-
-
-            <div class="objective reveal">
-
-                <div class="objective-number">
-                    04
-                </div>
-
-                <div>
-                    <h3>SURVIVE</h3>
-                    <p>Stay alive long enough to escape.</p>
-                </div>
-
-                <div class="objective-status"></div>
-
-            </div>
-
-        </div>
-
+    <div class="warning">
+        ⚠ UNKNOWN ENTITY DETECTED
     </div>
 
-</section>
+    <h2 class="reveal">
+        DO NOT<br>
+        <span style="color:#ff3030">LOOK BACK.</span>
+    </h2>
 
+    <p class="threat-copy reveal">
+        Environmental audio.
+        Darkness.
+        Rain.
+        Fog.
+        Unpredictable encounters.
+        And something you may not always see.
+    </p>
 
-<!-- =========================================================
-     ATMOSPHERE
-     ========================================================= -->
-
-<section class="section atmosphere">
-
-    <div class="container">
-
-        <div class="label reveal">
-            04 / ATMOSPHERE
-        </div>
-
-        <h2 class="title reveal">
-            NOTHING<br>
-            <span>FEELS SAFE.</span>
-        </h2>
-
-        <p class="description reveal">
-            Rain.
-            Wind.
-            Thunder.
-            Fog.
-            Darkness.
-            Environmental audio.
-        </p>
-
-        <div class="tags reveal">
-
-            <span class="tag">RAIN</span>
-            <span class="tag">WIND</span>
-            <span class="tag">THUNDER</span>
-            <span class="tag">FOG</span>
-            <span class="tag">DARKNESS</span>
-            <span class="tag">VHS</span>
-            <span class="tag">AMBIENT AUDIO</span>
-
-        </div>
-
-    </div>
+</div>
+```
 
 </section>
-
 
 <!-- =========================================================
      MEDIA
-     ========================================================= -->
+========================================================= -->
 
-<section class="section media" id="media">
+<section class="section" id="media">
 
-    <div class="container">
+```
+<div class="container">
 
-        <div class="label reveal">
-            05 / MEDIA
+    <div class="section-code reveal">
+        VISUAL EVIDENCE
+    </div>
+
+    <h2 class="big-title reveal">
+        RECOVERED<br>
+        <span class="ghost">FOOTAGE.</span>
+    </h2>
+
+    <div class="media-grid">
+
+        <div class="media-card large reveal">
+
+            <img src="./banner.png" alt="THE APOCALYPSE">
+
+            <div class="media-overlay">
+                <span>FILE_001 // AVAILABLE</span>
+                <h3>THE INCIDENT</h3>
+            </div>
+
         </div>
 
-        <h2 class="title reveal">
-            SEE THE<br>
-            <span>NIGHT.</span>
-        </h2>
+        <div class="media-card reveal">
 
-        <p class="description reveal">
-            Screenshots, footage and additional material
-            will be revealed during development.
-        </p>
-
-
-        <div class="media-grid">
-
-            <div class="media-card reveal">
-
-                <div class="media-info">
-
-                    <div class="media-number">
-                        01
-                    </div>
-
-                    <h3>SCREENSHOT</h3>
-
-                    <p>COMING SOON</p>
-
-                </div>
-
+            <div class="media-overlay">
+                <span>FILE_002</span>
+                <h3>SCREENSHOT</h3>
+                <span>COMING SOON</span>
             </div>
 
+        </div>
 
-            <div class="media-card reveal">
+        <div class="media-card reveal">
 
-                <div class="media-info">
-
-                    <div class="media-number">
-                        02
-                    </div>
-
-                    <h3>SCREENSHOT</h3>
-
-                    <p>COMING SOON</p>
-
-                </div>
-
+            <div class="media-overlay">
+                <span>FILE_003</span>
+                <h3>FOOTAGE</h3>
+                <span>COMING SOON</span>
             </div>
 
+        </div>
 
-            <div class="media-card reveal">
+        <div class="media-card reveal">
 
-                <div class="media-info">
-
-                    <div class="media-number">
-                        03
-                    </div>
-
-                    <h3>FOOTAGE</h3>
-
-                    <p>COMING SOON</p>
-
-                </div>
-
-            </div>
-
-
-            <div class="media-card reveal">
-
-                <div class="media-info">
-
-                    <div class="media-number">
-                        04
-                    </div>
-
-                    <h3>TRAILER</h3>
-
-                    <p>COMING SOON</p>
-
-                </div>
-
+            <div class="media-overlay">
+                <span>FILE_004</span>
+                <h3>TRAILER</h3>
+                <span>COMING SOON</span>
             </div>
 
         </div>
 
     </div>
 
-</section>
+</div>
+```
 
+</section>
 
 <!-- =========================================================
      PLAY
-     ========================================================= -->
+========================================================= -->
 
 <section class="section play" id="play">
 
-    <div class="container">
+```
+<div class="container">
 
-        <div class="play-head">
+    <div class="section-code reveal">
+        ACCESS THE BUILD
+    </div>
 
-            <div class="label reveal">
-                06 / PLAY THE GAME
-            </div>
+    <h2 class="big-title reveal">
+        IT IS<br>
+        <span class="ghost">ALREADY HERE.</span>
+    </h2>
 
-            <h2 class="title reveal">
-                COMING<br>
-                <span>SOON.</span>
-            </h2>
+    <div class="play-box reveal">
 
-            <p class="description reveal">
-                THE APOCALYPSE is currently in development.
-                The current build is already playable.
-            </p>
-
+        <div class="play-header">
+            <span>DOWNLOAD / PLAY</span>
+            <span class="live">● PLAYABLE NOW</span>
         </div>
-
 
         <div class="platforms">
 
+            <article class="platform">
 
-            <article class="platform reveal">
+                <div class="platform-name">
+                    ITCH.IO
+                </div>
 
-                <div class="platform-head">
-
-                    <div class="platform-name">
-                        ITCH.IO
-                    </div>
-
-                    <div class="platform-status">
-                        PLAYABLE NOW
-                    </div>
-
+                <div class="platform-status">
+                    CURRENT BUILD // ONLINE
                 </div>
 
                 <div class="embed">
@@ -2139,28 +1582,20 @@ body::before{
                         width="552"
                         height="167"
                         frameborder="0">
-                        <a href="https://alessii8.itch.io/the-apocalypse">
-                            THE APOCALYPSE by Alessii8
-                        </a>
                     </iframe>
 
                 </div>
 
             </article>
 
+            <article class="platform">
 
-            <article class="platform reveal">
+                <div class="platform-name">
+                    GAME JOLT
+                </div>
 
-                <div class="platform-head">
-
-                    <div class="platform-name">
-                        GAME JOLT
-                    </div>
-
-                    <div class="platform-status">
-                        PLAYABLE NOW
-                    </div>
-
+                <div class="platform-status">
+                    CURRENT BUILD // ONLINE
                 </div>
 
                 <div class="embed">
@@ -2176,769 +1611,427 @@ body::before{
 
             </article>
 
-
         </div>
 
-
-        <div class="play-note reveal">
-            CURRENT BUILD AVAILABLE / FINAL RELEASE DATE NOT ANNOUNCED
+        <div class="play-footer">
+            FINAL RELEASE DATE // NOT ANNOUNCED
         </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     ABOUT
-     ========================================================= -->
-
-<section class="section about" id="about">
-
-    <div class="container">
-
-        <div class="label reveal">
-            07 / ABOUT
-        </div>
-
-        <h2 class="title reveal">
-            MADE TO<br>
-            <span>MAKE YOU LOOK TWICE.</span>
-        </h2>
-
-
-        <div class="about-grid">
-
-            <div class="about-main reveal">
-
-                THE APOCALYPSE IS A
-                <span>FIRST-PERSON SURVIVAL HORROR</span>
-                EXPERIENCE BUILT AROUND
-                ATMOSPHERE, EXPLORATION AND TENSION.
-
-            </div>
-
-
-            <div class="about-copy reveal">
-
-                <p>
-                    The game focuses on environmental storytelling
-                    rather than explaining everything directly.
-                </p>
-
-                <p>
-                    Explore the world.
-                    Find clues.
-                    Understand the situation.
-                </p>
-
-                <p>
-                    Built entirely by Alessii8.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="tech reveal">
-
-            <span class="tag">UNITY</span>
-            <span class="tag">URP</span>
-            <span class="tag">CUSTOM AI</span>
-            <span class="tag">CINEMATIC SYSTEMS</span>
-            <span class="tag">FIRST PERSON</span>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     ROADMAP
-     ========================================================= -->
-
-<section class="section roadmap">
-
-    <div class="container">
-
-        <div class="label reveal">
-            08 / DEVELOPMENT
-        </div>
-
-        <h2 class="title reveal">
-            IN<br>
-            <span>DEVELOPMENT.</span>
-        </h2>
-
-
-        <div class="roadmap-grid">
-
-            <div class="roadmap-card reveal">
-
-                <h3>COMPLETED</h3>
-
-                <div class="roadmap-row">
-                    <span class="check done">✓</span>
-                    PLAYER SYSTEM
-                </div>
-
-                <div class="roadmap-row">
-                    <span class="check done">✓</span>
-                    INTERACTION SYSTEM
-                </div>
-
-                <div class="roadmap-row">
-                    <span class="check done">✓</span>
-                    FLASHLIGHT
-                </div>
-
-                <div class="roadmap-row">
-                    <span class="check done">✓</span>
-                    HIDING SYSTEM
-                </div>
-
-            </div>
-
-
-            <div class="roadmap-card reveal">
-
-                <h3>IN DEVELOPMENT</h3>
-
-                <div class="roadmap-row">
-                    <span class="check">○</span>
-                    FINAL SEQUENCES
-                </div>
-
-                <div class="roadmap-row">
-                    <span class="check">○</span>
-                    STORY ENDING
-                </div>
-
-                <div class="roadmap-row">
-                    <span class="check">○</span>
-                    FINAL AI POLISH
-                </div>
-
-                <div class="roadmap-row">
-                    <span class="check">○</span>
-                    RELEASE BUILD
-                </div>
-
-            </div>
-
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     FAQ
-     ========================================================= -->
-
-<section class="section faq" id="faq">
-
-    <div class="container">
-
-        <div class="label reveal">
-            09 / INFORMATION
-        </div>
-
-        <h2 class="title reveal">
-            QUESTIONS<br>
-            <span>ANSWERED.</span>
-        </h2>
-
-
-        <div class="faq-list">
-
-
-            <div class="faq-item reveal">
-
-                <button class="faq-question">
-
-                    <span>
-                        What is THE APOCALYPSE?
-                    </span>
-
-                    <span class="faq-plus"></span>
-
-                </button>
-
-                <div class="faq-answer">
-
-                    <p>
-                        A first-person single-player survival horror game
-                        focused on exploration, atmosphere and tension.
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="faq-item reveal">
-
-                <button class="faq-question">
-
-                    <span>
-                        Is it multiplayer?
-                    </span>
-
-                    <span class="faq-plus"></span>
-
-                </button>
-
-                <div class="faq-answer">
-
-                    <p>
-                        No. THE APOCALYPSE is designed as a
-                        single-player experience.
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="faq-item reveal">
-
-                <button class="faq-question">
-
-                    <span>
-                        What platform?
-                    </span>
-
-                    <span class="faq-plus"></span>
-
-                </button>
-
-                <div class="faq-answer">
-
-                    <p>
-                        PC.
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="faq-item reveal">
-
-                <button class="faq-question">
-
-                    <span>
-                        When does it release?
-                    </span>
-
-                    <span class="faq-plus"></span>
-
-                </button>
-
-                <div class="faq-answer">
-
-                    <p>
-                        The final release date has not been announced.
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="faq-item reveal">
-
-                <button class="faq-question">
-
-                    <span>
-                        Can I play it now?
-                    </span>
-
-                    <span class="faq-plus"></span>
-
-                </button>
-
-                <div class="faq-answer">
-
-                    <p>
-                        Yes. A playable development build is currently
-                        available through the links above.
-                    </p>
-
-                </div>
-
-            </div>
-
-
-        </div>
-
-    </div>
-
-</section>
-
-</main>
-
-
-<!-- =========================================================
-     FOOTER
-     ========================================================= -->
-
-<footer class="footer">
-
-    <div class="container">
-
-        <div class="footer-top">
-
-            <div>
-
-                <div class="footer-title">
-                    THE<br>
-                    APOCALYPSE
-                </div>
-
-                <div class="footer-sub">
-                    A GAME BY ALESSII8
-                </div>
-
-            </div>
-
-
-            <nav class="footer-links">
-
-                <a href="#home">HOME</a>
-                <a href="#story">STORY</a>
-                <a href="#gameplay">GAMEPLAY</a>
-                <a href="#media">MEDIA</a>
-                <a href="#play">PLAY</a>
-                <a href="#about">ABOUT</a>
-
-            </nav>
-
-        </div>
-
-
-        <div class="footer-bottom">
-
-            <span>
-                © 2026 THE APOCALYPSE
-            </span>
-
-            <span>
-                ALESSII8
-            </span>
-
-        </div>
-
-    </div>
-
-</footer>
-
-
-<!-- =========================================================
-     TRAILER MODAL
-     ========================================================= -->
-
-<div class="modal" id="modal">
-
-    <div class="modal-box">
-
-        <button
-            class="modal-x"
-            id="modalClose"
-            aria-label="Close"
-        >
-            ×
-        </button>
-
-        <h2>
-            TRAILER<br>
-            COMING SOON
-        </h2>
-
-        <p>
-            Something is coming.
-        </p>
-
-        <button
-            class="button modal-close"
-            id="modalReturn"
-        >
-            RETURN
-        </button>
 
     </div>
 
 </div>
+```
 
+</section>
+
+<!-- =========================================================
+     DEVELOPMENT
+========================================================= -->
+
+<section class="section">
+
+```
+<div class="container">
+
+    <div class="section-code reveal">
+        DEVELOPMENT STATUS
+    </div>
+
+    <h2 class="big-title reveal">
+        BUILDING<br>
+        <span class="ghost">THE END.</span>
+    </h2>
+
+    <div class="dev-grid">
+
+        <div class="dev-panel reveal">
+
+            <div class="dev-head">
+                COMPLETED // SYSTEMS
+            </div>
+
+            <div class="dev-row">
+                PLAYER SYSTEM
+                <span class="done">[DONE]</span>
+            </div>
+
+            <div class="dev-row">
+                INTERACTION
+                <span class="done">[DONE]</span>
+            </div>
+
+            <div class="dev-row">
+                FLASHLIGHT
+                <span class="done">[DONE]</span>
+            </div>
+
+            <div class="dev-row">
+                HIDING
+                <span class="done">[DONE]</span>
+            </div>
+
+        </div>
+
+        <div class="dev-panel reveal">
+
+            <div class="dev-head">
+                DEVELOPMENT // REMAINING
+            </div>
+
+            <div class="dev-row">
+                FINAL SEQUENCES
+                <span class="pending">[WORK]</span>
+            </div>
+
+            <div class="dev-row">
+                STORY ENDING
+                <span class="pending">[WORK]</span>
+            </div>
+
+            <div class="dev-row">
+                AI POLISH
+                <span class="pending">[WORK]</span>
+            </div>
+
+            <div class="dev-row">
+                RELEASE BUILD
+                <span class="pending">[WAIT]</span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="progress reveal">
+
+        <div class="section-code">
+            PROJECT STATUS
+        </div>
+
+        <div class="progress-bar">
+            <span></span>
+        </div>
+
+    </div>
+
+</div>
+```
+
+</section>
+
+<!-- =========================================================
+     FAQ
+========================================================= -->
+
+<section class="section" id="faq">
+
+```
+<div class="container">
+
+    <div class="section-code reveal">
+        DATABASE / FAQ
+    </div>
+
+    <h2 class="big-title reveal">
+        QUESTIONS<br>
+        <span class="ghost">REMAIN.</span>
+    </h2>
+
+    <div class="faq-list">
+
+        <div class="faq-item reveal">
+
+            <button class="faq-question">
+                <span>WHAT IS THE APOCALYPSE?</span>
+                <span class="faq-plus">+</span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    A first-person single-player survival
+                    horror game focused on exploration,
+                    atmosphere, investigation and tension.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="faq-item reveal">
+
+            <button class="faq-question">
+                <span>IS IT MULTIPLAYER?</span>
+                <span class="faq-plus">+</span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    No. The current design is focused
+                    entirely on a single-player experience.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="faq-item reveal">
+
+            <button class="faq-question">
+                <span>WHAT PLATFORM?</span>
+                <span class="faq-plus">+</span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    PC.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="faq-item reveal">
+
+            <button class="faq-question">
+                <span>CAN I PLAY IT NOW?</span>
+                <span class="faq-plus">+</span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    Yes. A playable development build
+                    is currently available through
+                    itch.io and Game Jolt.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="faq-item reveal">
+
+            <button class="faq-question">
+                <span>WHEN IS THE FINAL RELEASE?</span>
+                <span class="faq-plus">+</span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    A final release date has not been announced.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+```
+
+</section>
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer>
+
+```
+<div class="container">
+
+    <div class="footer-logo">
+        THE<br>
+        <span>APOCALYPSE</span>
+    </div>
+
+    <div class="footer-info">
+
+        <div>
+            CREATED BY
+            <strong>ALESSII8</strong>
+        </div>
+
+        <div>
+            UNITY // URP // SURVIVAL HORROR
+        </div>
+
+        <div>
+            © 2026
+        </div>
+
+    </div>
+
+</div>
+```
+
+</footer>
+
+<!-- =========================================================
+     MODAL
+========================================================= -->
+
+<div class="modal" id="modal">
+
+```
+<div class="modal-box">
+
+    <button class="close" id="close">
+        ×
+    </button>
+
+    <div class="modal-label">
+        CLASSIFIED FILE // 000
+    </div>
+
+    <h2>
+        TRAILER<br>
+        <span style="color:#ff3030">MISSING.</span>
+    </h2>
+
+    <p>
+        The requested file could not be recovered.
+        Additional footage will be released when available.
+    </p>
+
+    <button class="btn primary" id="return">
+        RETURN TO ARCHIVE
+    </button>
+
+</div>
+```
+
+</div>
 
 <script>
+document.addEventListener("DOMContentLoaded", () => {
 
-document.addEventListener("DOMContentLoaded",function(){
-
-    const body=document.body;
-
-    const loader=document.getElementById("loader");
-
-    const navbar=document.getElementById("navbar");
-
-    const heroImage=document.getElementById("heroImage");
-
-    const menu=document.getElementById("menu");
-
-    const navLinks=document.getElementById("navLinks");
-
-    const modal=document.getElementById("modal");
-
-    const trailerButton=document.getElementById("trailerButton");
-
-    const modalClose=document.getElementById("modalClose");
-
-    const modalReturn=document.getElementById("modalReturn");
-
-    const reducedMotion=
-        window.matchMedia(
-            "(prefers-reduced-motion: reduce)"
-        ).matches;
-
+    const boot = document.getElementById("boot");
+    const modal = document.getElementById("modal");
+    const trailer = document.getElementById("trailer");
+    const close = document.getElementById("close");
+    const returnButton = document.getElementById("return");
 
     /* =====================================================
-       LOADER
-       ===================================================== */
+       BOOT
+    ===================================================== */
 
-    window.addEventListener("load",function(){
+    window.addEventListener("load", () => {
 
-        setTimeout(function(){
-
-            loader.classList.add("hide");
-
-            body.classList.remove("lock");
-
-        },600);
+        setTimeout(() => {
+            boot.classList.add("hidden");
+        }, 2300);
 
     });
-
-    setTimeout(function(){
-
-        loader.classList.add("hide");
-
-        body.classList.remove("lock");
-
-    },2500);
-
-
-    /* =====================================================
-       NAVBAR
-       ===================================================== */
-
-    function updateNavbar(){
-
-        if(window.scrollY>40){
-
-            navbar.classList.add("scrolled");
-
-        }else{
-
-            navbar.classList.remove("scrolled");
-
-        }
-
-    }
-
-    window.addEventListener(
-        "scroll",
-        updateNavbar,
-        {passive:true}
-    );
-
-    updateNavbar();
-
-
-    /* =====================================================
-       MOBILE MENU
-       ===================================================== */
-
-    menu.addEventListener("click",function(){
-
-        menu.classList.toggle("open");
-
-        navLinks.classList.toggle("open");
-
-    });
-
-
-    navLinks
-        .querySelectorAll("a")
-        .forEach(function(link){
-
-            link.addEventListener("click",function(){
-
-                menu.classList.remove("open");
-
-                navLinks.classList.remove("open");
-
-            });
-
-        });
-
-
-    /* =====================================================
-       PARALLAX
-       ===================================================== */
-
-    if(!reducedMotion){
-
-        let ticking=false;
-
-        window.addEventListener(
-            "scroll",
-            function(){
-
-                if(ticking)return;
-
-                window.requestAnimationFrame(function(){
-
-                    const scroll=window.scrollY;
-
-                    if(scroll<
-                        window.innerHeight*1.1
-                    ){
-
-                        heroImage.style.transform=
-                            "translate3d(0,"+
-                            scroll*.08+
-                            "px,0) scale(1.04)";
-
-                    }
-
-                    ticking=false;
-
-                });
-
-                ticking=true;
-
-            },
-            {passive:true}
-        );
-
-    }
-
-
-    /* =====================================================
-       REVEAL
-       ===================================================== */
-
-    const elements=
-        document.querySelectorAll(".reveal");
-
-    const observer=
-        new IntersectionObserver(
-            function(entries,obs){
-
-                entries.forEach(function(entry){
-
-                    if(entry.isIntersecting){
-
-                        entry.target.classList.add(
-                            "visible"
-                        );
-
-                        obs.unobserve(
-                            entry.target
-                        );
-
-                    }
-
-                });
-
-            },
-            {
-                threshold:.1,
-                rootMargin:"0px 0px -35px 0px"
-            }
-        );
-
-
-    elements.forEach(function(element){
-
-        observer.observe(element);
-
-    });
-
 
     /* =====================================================
        MODAL
-       ===================================================== */
+    ===================================================== */
 
     function openModal(){
-
         modal.classList.add("open");
-
         document.body.style.overflow="hidden";
-
     }
 
     function closeModal(){
-
         modal.classList.remove("open");
-
         document.body.style.overflow="";
-
     }
 
+    trailer.addEventListener("click",openModal);
+    close.addEventListener("click",closeModal);
+    returnButton.addEventListener("click",closeModal);
 
-    trailerButton.addEventListener(
-        "click",
-        openModal
-    );
-
-    modalClose.addEventListener(
-        "click",
-        closeModal
-    );
-
-    modalReturn.addEventListener(
-        "click",
-        closeModal
-    );
-
-
-    modal.addEventListener(
-        "click",
-        function(event){
-
-            if(event.target===modal){
-
-                closeModal();
-
-            }
-
+    modal.addEventListener("click",(e)=>{
+        if(e.target===modal){
+            closeModal();
         }
-    );
+    });
 
-
-    document.addEventListener(
-        "keydown",
-        function(event){
-
-            if(event.key==="Escape"){
-
-                closeModal();
-
-            }
-
+    document.addEventListener("keydown",(e)=>{
+        if(e.key==="Escape"){
+            closeModal();
         }
-    );
-
+    });
 
     /* =====================================================
        FAQ
-       ===================================================== */
+    ===================================================== */
 
-    const faqItems=
-        document.querySelectorAll(".faq-item");
+    document.querySelectorAll(".faq-item").forEach(item => {
 
+        const question = item.querySelector(".faq-question");
+        const answer = item.querySelector(".faq-answer");
 
-    faqItems.forEach(function(item){
+        question.addEventListener("click",()=>{
 
-        const question=
-            item.querySelector(".faq-question");
+            const open = item.classList.contains("open");
 
-        const answer=
-            item.querySelector(".faq-answer");
+            document.querySelectorAll(".faq-item").forEach(other=>{
+                other.classList.remove("open");
+                other.querySelector(".faq-answer").style.maxHeight=null;
+                other.querySelector(".faq-plus").textContent="+";
+            });
 
+            if(!open){
 
-        question.addEventListener(
-            "click",
-            function(){
+                item.classList.add("open");
 
-                const wasOpen=
-                    item.classList.contains("open");
+                answer.style.maxHeight =
+                    answer.scrollHeight + "px";
 
-
-                faqItems.forEach(function(other){
-
-                    other.classList.remove("open");
-
-                    other
-                        .querySelector(".faq-answer")
-                        .style.maxHeight=null;
-
-                });
-
-
-                if(!wasOpen){
-
-                    item.classList.add("open");
-
-                    answer.style.maxHeight=
-                        answer.scrollHeight+
-                        "px";
-
-                }
-
+                item.querySelector(".faq-plus").textContent="−";
             }
-        );
-
-    });
-
-
-    /* =====================================================
-       ANCHOR SCROLL
-       ===================================================== */
-
-    document
-        .querySelectorAll('a[href^="#"]')
-        .forEach(function(anchor){
-
-            anchor.addEventListener(
-                "click",
-                function(event){
-
-                    const id=
-                        anchor.getAttribute("href");
-
-                    const target=
-                        document.querySelector(id);
-
-                    if(!target)return;
-
-                    event.preventDefault();
-
-                    const offset=
-                        navbar.offsetHeight+10;
-
-                    const position=
-                        target
-                        .getBoundingClientRect()
-                        .top+
-                        window.scrollY-
-                        offset;
-
-
-                    window.scrollTo({
-
-                        top:position,
-
-                        behavior:
-                            reducedMotion
-                            ? "auto"
-                            : "smooth"
-
-                    });
-
-                }
-            );
 
         });
 
-});
+    });
 
+    /* =====================================================
+       REVEAL
+    ===================================================== */
+
+    const observer = new IntersectionObserver(
+        entries => {
+
+            entries.forEach(entry => {
+
+                if(entry.isIntersecting){
+
+                    entry.target.classList.add("visible");
+
+                    observer.unobserve(entry.target);
+
+                }
+
+            });
+
+        },
+        {
+            threshold:.08,
+            rootMargin:"0px 0px -40px 0px"
+        }
+    );
+
+    document.querySelectorAll(".reveal").forEach(el=>{
+        observer.observe(el);
+    });
+
+    /* =====================================================
+       PARALLAX
+    ===================================================== */
+
+    const hero = document.querySelector(".hero-bg");
+
+    window.addEventListener("scroll",()=>{
+
+        if(window.scrollY < window.innerHeight){
+
+            hero.style.transform =
+                "scale(1.08) translateY(" +
+                window.scrollY * .05 +
+                "px)";
+
+        }
+
+    },{passive:true});
+
+});
 </script>
 
 </body>
